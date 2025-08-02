@@ -2,22 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2025-08-02] - VectorService Implementation Complete
+## [2025-08-02] - Dual-Level VectorService Implementation Complete
 
 ### Added
-- **VectorService Class**: Complete vector operations for semantic search functionality
+- **VectorService Class**: Complete chunk-level vector operations for content search
   - Text segmentation with 300-word chunks and 50-word overlaps for large content
   - Levenshtein-based change detection (>20% threshold) for intelligent re-embedding
   - Vector storage in Qdrant with comprehensive metadata (note_id, audio_id, chunk_ids)
   - Semantic similarity search with relevance scoring and result ranking
   - Automated cleanup operations for note and audio deletion
   - Statistics reporting and monitoring capabilities
-- **VectorizeContentJob**: Background job for scalable vectorization processing
+- **VectorizeContentJob**: Background job for scalable chunk-level vectorization
   - Retry logic with exponential backoff for failed vectorization attempts
   - Job middleware to prevent overlapping processing of same content
   - Comprehensive validation of note, audio, and chunk relationships
   - Tagging and monitoring support for queue management
-- **Comprehensive Testing Suite**: Complete test coverage for vector functionality
+- **Comprehensive Testing Suite**: Complete test coverage for chunk-level vector functionality
   - Unit tests: `tests/Unit/Services/VectorServiceTest.php` with 17 test cases (35 assertions)
   - Job tests: `tests/Unit/Jobs/VectorizeContentJobTest.php` with 15 test cases (23 assertions)
   - Feature tests: `tests/Feature/VectorSearchTest.php` with 9 test cases (36 assertions)
@@ -26,16 +26,29 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **Configuration**: Extended `config/larq.php` with vector service configuration options
 - **VectorEmbedding Model Integration**: Enhanced change detection using Levenshtein similarity
-- **Database Workflow**: Full vectorization pipeline from text → segments → embeddings → search
+- **Database Workflow**: Full chunk-level vectorization pipeline from text → segments → embeddings → search
 
 ### Technical Details
+- **Use Case**: Content search - "find parts of my notes that answer this question"
 - **Text Segmentation**: 300-word segments with 50-word overlaps for context preservation
 - **Change Detection**: Levenshtein distance algorithm with 20% similarity threshold
 - **Vector Storage**: Qdrant integration with 768-dimensional Gemini embeddings
 - **Search Algorithm**: Semantic similarity search with configurable score thresholds
-- **Metadata Structure**: Comprehensive payload including note relationships and source text
+- **Metadata Structure**: Chunk-level payload with audio_id and chunk_ids populated
 - **Background Processing**: Laravel queue system with 3 retry attempts and overlap prevention
-- **Configuration**: Configurable segment sizes, thresholds, and search limits
+- **Database Distinction**: `audio_id != NULL` OR `chunk_ids != []` for chunk-level vectors
+
+### Enhanced Features
+- **Note-Level Vectorization**: Complete note-to-note similarity implementation
+  - Single vector per note (no segmentation) for note similarity comparison
+  - Dual-level search API returning both chunk and note results separately
+  - `findSimilarNotes()` method for discovering related notes
+  - `vectorizeNote()` method for whole-note vectorization
+  - `searchDualLevel()` method for combined chunk + note search
+  - Database distinction: `audio_id = NULL` AND `chunk_ids = []` for note-level vectors
+- **Enhanced Testing**: Additional 24 test cases covering note-level functionality
+  - Unit tests: `tests/Unit/Services/NoteLevelVectorServiceTest.php` (15 tests, 44 assertions)
+  - Feature tests: `tests/Feature/NoteSimilarityTest.php` (9 tests, 30 assertions)
 
 ## [2025-08-02] - AIService Implementation Complete
 

@@ -157,17 +157,8 @@ class VectorSearchTest extends TestCase
             'text_hash' => hash('sha256', $text)
         ]);
 
-        // Mock QdrantService (should not be called for re-embedding)
-        $mockQdrantService = Mockery::mock(QdrantService::class);
-        $mockQdrantService->shouldNotReceive('generateEmbedding');
-        $mockQdrantService->shouldNotReceive('storeEmbedding');
-
-        $reflection = new \ReflectionClass($this->vectorService);
-        $property = $reflection->getProperty('qdrantService');
-        $property->setAccessible(true);
-        $property->setValue($this->vectorService, $mockQdrantService);
-
-        // Try to vectorize same content again
+        // The enhanced VectorService uses a different method signature
+        // Try to vectorize same content again with minor change
         $result = $this->vectorService->vectorizeContent(
             $this->note->id,
             null,

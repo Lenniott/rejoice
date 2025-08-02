@@ -317,7 +317,7 @@ class VectorServiceTest extends TestCase
         
         $this->assertEquals(2, $stats['total_vectors']);
         $this->assertEquals(1, $stats['vectors_with_audio']);
-        $this->assertEquals(1, $stats['vectors_text_only']);
+        $this->assertEquals(1, $stats['chunk_level_vectors']);
         $this->assertEquals(1, $stats['unique_notes_vectorized']);
         $this->assertEquals(2.0, $stats['average_vectors_per_note']);
         $this->assertArrayHasKey('embedding_models', $stats);

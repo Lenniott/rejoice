@@ -150,21 +150,7 @@ Cascade deletes associated audio, chunks, and vectors.
 
 ## 4. Search & Vectorization
 
-### 4.1 Trigger Vectorization
-
-**POST** `/api/vectorize/run`
-
-Re-embeds modified chunks/audio.
-
-**Response:**
-
-```json
-{ "message": "Vectorization started" }
-```
-
----
-
-### 4.2 Semantic Search
+### 4.1 Semantic Search (Dual-Level)
 
 **POST** `/api/search/semantic`
 
@@ -177,22 +163,86 @@ Re-embeds modified chunks/audio.
 **Response:**
 
 ```json
-[
-  {
-    "note_id": "uuid",
-    "chunk_ids": ["uuid1"],
-    "text_preview": "Refined AI output ...",
-    "score": 0.89
-  }
-]
+{
+  "chunk_results": [
+    {
+      "note_id": "uuid",
+      "chunk_ids": ["uuid1"],
+      "text_preview": "Refined AI output ...",
+      "score": 0.89,
+      "source_type": "chunk"
+    }
+  ],
+  "note_results": [
+    {
+      "note_id": "uuid",
+      "note_title": "Tax Planning Guide",
+      "text_preview": "Complete tax information...",
+      "score": 0.76,
+      "source_type": "note"
+    }
+  ]
+}
 ```
 
 ---
 
-### 4.3 Similar Notes / Chunks (Optional)
+### 4.2 Find Similar Notes
 
-**GET** `/api/notes/{noteId}/similar-notes`
-**GET** `/api/notes/{noteId}/chunks/{chunkId}/similar-chunks`
+**GET** `/api/notes/{id}/similar`
+
+**Query Parameters:**
+* `limit` (optional, default: 5)
+
+**Response:**
+
+```json
+{
+  "similar_notes": [
+    {
+      "note_id": "uuid",
+      "note_title": "Related Tax Notes",
+      "similarity_score": 0.82,
+      "preview": "Contains similar tax topics..."
+    }
+  ]
+}
+```
+
+---
+
+### 4.3 Trigger Re-Embedding
+
+**POST** `/api/vectorize/run`
+
+**Body (optional):**
+
+```json
+{ 
+  "note_id": "uuid",
+  "type": "note-level"
+}
+```
+
+Re-embeds chunks/audio and/or note-level vectors.
+
+**Response:**
+
+```json
+{ "message": "Vectorization started" }
+```
+
+---
+
+### 4.4 Vectorize Specific Note
+
+**POST** `/api/notes/{id}/vectorize`
+
+**Response:**
+
+```json
+{ "message": "Note vectorization queued" }
+```
 
 ---
 
