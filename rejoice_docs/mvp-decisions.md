@@ -13,7 +13,7 @@
 - Text editor for content editing.  
 
 **Databases:**
-- **PostgreSQL** – relational data (notes, audio metadata, chunks).  
+- **SQLite** – relational data (notes, audio metadata, chunks).  
 - **Qdrant** – vector database for semantic search (embeddings).  
 
 **AI/Embedding:**
@@ -22,7 +22,7 @@
 **Containerization:**  
 - Docker + Docker Compose:
   - Single container builds frontend with Vite, serves via Laravel.  
-  - Postgres + Qdrant as separate containers with volumes for persistence.
+  - SQLite + Qdrant as separate containers with volumes for persistence.
 
 ---
 
@@ -30,7 +30,7 @@
 
 **Strategy:** Store audio on filesystem (Laravel storage) with DB reference.  
 - Path pattern: `storage/app/audio/{note_id}/{uuid}.webm`  
-- Postgres `audio_files` table stores `id`, `note_id`, `path`, `created_at`.  
+- SQLite `audio_files` table stores `id`, `note_id`, `path`, `created_at`.  
 
 **Reasoning:** Avoids DB bloat and improves performance for playback/streaming.
 

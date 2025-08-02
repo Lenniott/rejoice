@@ -94,6 +94,11 @@ LARQ_HOST=http://qdrant:6333
 LARQ_API_KEY=
 GEMINI_API_KEY=YOUR_KEY
 GEMINI_EMBEDDING_MODEL=models/embedding-001
+
+# AI Service Configuration (Optional)
+AI_REQUEST_TIMEOUT=30
+AI_MAX_TOKENS=1000
+AI_TEMPERATURE=0.3
 ```
 
 ---
@@ -202,13 +207,14 @@ php artisan serve --port=8080
 npm run dev
 
 # Terminal 3: Start Qdrant (vector search) - Optional
-docker run -d --name qdrant -p 6333:6333 qdrant/qdrant
+# NOTE: Now managed via docker-compose.yml
+# docker run -d --name qdrant -p 6444:6333 qdrant/qdrant
 ```
 
 **Ports Used:**
 - Laravel App: `http://localhost:8080`
 - Vite Dev Server: `http://localhost:3456` (automatic)
-- Qdrant Vector DB: `http://localhost:6444` (incomplete)
+- Qdrant Vector DB: `http://localhost:6444` (complete, via Docker)
 
 ---
 
