@@ -22,8 +22,8 @@ echo "⚡ Starting Vite frontend on port 3456..."
 npm run dev &
 
 # Optional: Start Qdrant (uncomment if needed)
-# echo "🔍 Starting Qdrant vector search on port 6333..."
-# docker run -d --name qdrant -p 6333:6333 qdrant/qdrant 2>/dev/null || echo "Qdrant already running"
+# echo "🔍 Starting Qdrant vector search on port 6444..."
+# docker run -d --name qdrant -p 6444:6333 qdrant/qdrant 2>/dev/null || echo "Qdrant already running"
 
 echo ""
 echo "✅ All services started!"

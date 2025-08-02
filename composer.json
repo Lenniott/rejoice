@@ -14,7 +14,8 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "tightenco/ziggy": "^2.0"
+        "tightenco/ziggy": "^2.0",
+        "wontonee/laravel-qdrant-sdk": "^1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

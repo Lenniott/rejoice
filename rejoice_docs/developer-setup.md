@@ -1,6 +1,6 @@
 # Developer Setup Guide – ReJoIce
 
-This guide walks through every step to get ReJoIce running locally—all backend, frontend, and vector search—using Docker, Laravel 12, Breeze with React, and Qdrant.
+This guide walks through every step to get ReJoIce running locally—all backend, frontend, and vector search—using Laravel 12, Breeze with React, SQLite, and Qdrant.
 
 ## 🎉 Current Status: READY TO USE!
 
@@ -17,10 +17,10 @@ Your Laravel Breeze React authentication platform is **fully working** and ready
 
 ## 1. Prerequisites
 
-- Docker & Docker Compose
-- PHP 8.2+
+- PHP 8.2+ (with SQLite extension enabled)
 - Composer
 - Node.js & npm (for frontend and asset builds)
+- Docker (optional, only needed for Qdrant vector search)
 
 ---
 
@@ -69,7 +69,7 @@ Laravel uses **Vite** (via Breeze) to compile React, Tailwind, JS/CSS assets ([l
 ```bash
 docker run -d \
   --name qdrant \
-  -p 6333:6333 \
+  -p 6444:6333 \
   -v $(pwd)/qdrant_storage:/qdrant/storage \
   qdrant/qdrant
 ```
@@ -93,43 +93,48 @@ Configure your `.env`:
 LARQ_HOST=http://qdrant:6333
 LARQ_API_KEY=
 GEMINI_API_KEY=YOUR_KEY
-GEMINI_MODEL=models/embedding-001
+GEMINI_EMBEDDING_MODEL=models/embedding-001
 ```
 
 ---
 
-## 7. Docker Compose Setup (Laravel + Postgres + Qdrant)
+## 7. Database Setup (SQLite)
 
-Example `docker-compose.yml`:
+SQLite is already configured and ready to use! The database file will be created automatically at `database/database.sqlite`.
+
+**Configure your `.env` for SQLite:**
+
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+```
+
+**Create the database file and run migrations:**
+
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
+
+**Optional: Docker Compose Setup (only for Qdrant)**
+
+If you want to run Qdrant via Docker Compose, create `docker-compose.yml`:
 
 ```yaml
 services:
-  app:
-    build: .
-    ports: ["3456:3456"]
-    volumes: [".:/var/www/html"]
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: rejoice
-      POSTGRES_USER: rejoice
-      POSTGRES_PASSWORD: secret
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
   qdrant:
     image: qdrant/qdrant
     ports: ["6333:6333"]
     volumes:
       - qdrant_storage:/qdrant/storage
 volumes:
-  postgres_data:
   qdrant_storage:
 ```
 
-Start all services:
+Start Qdrant:
 
 ```bash
-docker-compose up -d --build
+docker-compose up -d
 ```
 
 ---
@@ -203,7 +208,7 @@ docker run -d --name qdrant -p 6333:6333 qdrant/qdrant
 **Ports Used:**
 - Laravel App: `http://localhost:8080`
 - Vite Dev Server: `http://localhost:3456` (automatic)
-- Qdrant Vector DB: `http://localhost:6333` (incomplete)
+- Qdrant Vector DB: `http://localhost:6444` (incomplete)
 
 ---
 
@@ -235,18 +240,37 @@ Use Postman or browser to test API calls.
 | ---- | -------------------------------- | ------ |
 | ✔️   | Install Laravel & dependencies   | Complete |
 | ✔️   | Add Breeze (React + Auth)        | Complete |
+| ✔️   | Configure SQLite database        | Complete |
 | ✔️   | Run migrations, generate app key | Complete |
 | ✔️   | Build frontend assets            | Complete |
 | ✔️   | **Access authentication pages**  | **Ready** |
 | ✔️   | **Test login/register flow**     | **Ready** |
 | ✔️   | **Access dashboard/profile**     | **Ready** |
-| 🔄   | Launch Qdrant via Docker         | incomplete |
-| 🔄   | Install and configure Qdrant SDK | incomplete |
-| 🔄   | Start full Docker Compose stack  | incomplete |
+| ✔️   | Launch Qdrant via Docker         | Complete |
+| ✔️   | Install and configure Qdrant SDK | Complete |
+| ✔️   | **Docker containerization**     | **Complete** |
+| ✔️   | **Vector database integration**  | **Complete** |
 | 🔄   | Test API endpoints               | incomplete |
 
 ### **🎉 Ready to Use:**
-Your Laravel Breeze React authentication platform is fully working at `http://localhost:8080`
+Your complete ReJoIce application is now fully containerized and ready for development!
+
+**🐳 Docker Setup:**
+- Laravel app: `http://localhost:8080` 
+- Qdrant vector database: `http://localhost:6444`
+- Complete development environment in containers
+
+**🚀 Quick Start:**
+```bash
+# Start the complete stack
+docker-compose up -d
+
+# Test vector database connectivity  
+docker-compose exec app php artisan qdrant:test
+
+# View application
+open http://localhost:8080
+```
 
 [1]: https://portable.io/connectors/laravel-forge/qdrant?utm_source=chatgpt.com "Integrate data from Laravel Forge and Qdrant - Portable"
 [2]: https://qdrant.tech/documentation/tutorials/?utm_source=chatgpt.com "Database Tutorials - Qdrant"

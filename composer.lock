@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80efe4b3b82c9c7acdd39b013483f9ae",
+    "content-hash": "c21240c5f428457ba90d3d4b7f06b526",
     "packages": [
         {
             "name": "brick/math",
@@ -6022,6 +6022,55 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "wontonee/laravel-qdrant-sdk",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wontonee/laravel-qdrant-sdk.git",
+                "reference": "11e96e875200e4e9c72e4b9b6722e14eccef97a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wontonee/laravel-qdrant-sdk/zipball/11e96e875200e4e9c72e4b9b6722e14eccef97a6",
+                "reference": "11e96e875200e4e9c72e4b9b6722e14eccef97a6",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/http": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Wontonee\\LarQ\\Providers\\LarQServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wontonee\\LarQ\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wontonee",
+                    "email": "saju@wontonee.com"
+                }
+            ],
+            "description": "Laravel SDK for Qdrant vector database with embedders like OpenAI and Gemini",
+            "support": {
+                "issues": "https://github.com/wontonee/laravel-qdrant-sdk/issues",
+                "source": "https://github.com/wontonee/laravel-qdrant-sdk/tree/1.0.1"
+            },
+            "time": "2025-05-29T09:07:55+00:00"
         }
     ],
     "packages-dev": [

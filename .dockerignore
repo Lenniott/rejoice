@@ -1,0 +1,67 @@
+# Docker ignore file for ReJoIce Laravel application
+#
+# Requirements:
+# - Exclude unnecessary files from Docker build context
+# - Reduce build time and image size
+# - Prevent sensitive data from entering containers
+#
+# Flow:
+# - Docker build reads .dockerignore -> Excludes listed files/directories
+# - Only necessary application code copied to container
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+rejoice_docs/
+*.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Dependencies (will be installed in container)
+node_modules/
+vendor/
+
+# Build artifacts
+public/build/
+public/hot
+
+# Logs
+storage/logs/
+*.log
+
+# Environment files (handled separately)
+.env
+.env.*
+
+# Cache files
+.phpunit.result.cache
+bootstrap/cache/*.php
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/testing/
+storage/framework/views/
+
+# Temporary files
+tmp/
+temp/
+
+# Docker files
+docker-compose.override.yml

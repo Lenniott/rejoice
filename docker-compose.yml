@@ -1,0 +1,94 @@
+# Docker Compose configuration for ReJoIce development environment
+#
+# Requirements:
+# - Laravel application container with PHP, Nginx, Node.js
+# - Qdrant vector database for semantic search
+# - Persistent volumes for database and vector storage
+# - Network connectivity between services
+# - Environment variable configuration
+#
+# Flow:
+# - docker-compose up -> Builds Laravel app -> Starts Qdrant -> Creates network
+# - Services communicate via service names -> Data persisted in volumes
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rejoice_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./storage/logs:/var/www/html/storage/logs
+      - sqlite_data:/var/www/html/database
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=${APP_KEY}
+      - APP_URL=http://localhost:8080
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - QDRANT_HOST=http://qdrant:6333
+      - QDRANT_API_KEY=
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_EMBEDDING_MODEL=models/embedding-001
+    depends_on:
+      - qdrant
+    networks:
+      - rejoice_network
+    restart: unless-stopped
+
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: rejoice_qdrant
+    ports:
+      - "6444:6333"    # REST API (host:container)
+      - "6445:6334"    # gRPC API (optional)
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    networks:
+      - rejoice_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Qdrant Web UI (Optional - for development)
+  qdrant-web-ui:
+    image: qdrant/qdrant-web-ui:latest
+    container_name: rejoice_qdrant_ui
+    ports:
+      - "6446:80"
+    environment:
+      - QDRANT_API_URL=http://qdrant:6333
+    depends_on:
+      - qdrant
+    networks:
+      - rejoice_network
+    restart: unless-stopped
+    profiles:
+      - dev  # Only start with --profile dev
+
+# Persistent Volumes
+volumes:
+  qdrant_storage:
+    driver: local
+    name: rejoice_qdrant_storage
+  sqlite_data:
+    driver: local
+    name: rejoice_sqlite_data
+
+# Networks
+networks:
+  rejoice_network:
+    driver: bridge
+    name: rejoice_network

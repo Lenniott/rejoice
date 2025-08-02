@@ -1,25 +1,44 @@
 # Data Schemas – ReJoIce (AI Voice Note App)
 
 ## 1. Overview
-ReJoIce uses **PostgreSQL** for structured note/chunk/audio data and **Qdrant** for vector embeddings used in semantic search.
+ReJoIce uses **SQLite** for structured note/chunk/audio data and **Qdrant** for vector embeddings used in semantic search.
+
+**📋 Visual Schema**: See [`database-schema.dbml`](./database-schema.dbml) for complete DBML representation with relationships and indexes.
 
 ---
 
-## 2. PostgreSQL Schema
+## 2. SQLite Schema
 
-### 2.1 Notes Table
+### 2.1 Users Table (Laravel Breeze)
+Stores user authentication data.
+
+| Column              | Type         | Constraints     | Description                    |
+|---------------------|--------------|-----------------|--------------------------------|
+| id                  | UUID         | PK              | Unique user identifier         |
+| name                | VARCHAR(255) | NOT NULL        | User's display name            |
+| email               | VARCHAR(255) | UNIQUE, NOT NULL| Authentication email           |
+| email_verified_at   | TIMESTAMP    | Nullable        | Email verification timestamp   |
+| password            | VARCHAR(255) | NOT NULL        | Hashed password                |
+| remember_token      | VARCHAR(100) | Nullable        | "Remember me" functionality    |
+| created_at          | TIMESTAMP    | NOT NULL        | Account creation time          |
+| updated_at          | TIMESTAMP    | NOT NULL        | Last profile update            |
+
+---
+
+### 2.2 Notes Table
 Stores top-level notes.
 
 | Column       | Type       | Constraints     | Description                   |
 |--------------|------------|-----------------|-------------------------------|
 | id           | UUID       | PK              | Unique note identifier        |
+| user_id      | UUID       | FK (users.id)   | Note owner                    |
 | title        | VARCHAR(255)| NOT NULL       | Note title (timestamp default)|
 | created_at   | TIMESTAMP  | NOT NULL        | Creation time                 |
 | updated_at   | TIMESTAMP  | NOT NULL        | Last modified time            |
 
 ---
 
-### 2.2 Audio Files Table
+### 2.3 Audio Files Table
 Stores audio metadata and file references.
 
 | Column     | Type  | Constraints        | Description                        |
@@ -31,7 +50,7 @@ Stores audio metadata and file references.
 
 ---
 
-### 2.3 Chunks Table
+### 2.4 Chunks Table
 Represents blocks of text (dictation, AI, edited).
 
 | Column        | Type       | Constraints         | Description                              |
@@ -75,14 +94,17 @@ Represents blocks of text (dictation, AI, edited).
 
 ## 4. Relationships
 
+* `users` (1) → `notes` (many) - User ownership
 * `notes` (1) → `audio_files` (many)
 * `notes` (1) → `chunks` (many)
 * `audio_files` (1) → `chunks` (many, optional)
 * Qdrant vectors reference `note_id` and optionally `audio_id` + `chunk_ids`
 
+**DBML Visual**: The complete schema with foreign keys, indexes, and constraints is available in [`database-schema.dbml`](./database-schema.dbml)
+
 ---
 
 ## 5. Indexing
 
-* Postgres: Index on `note_id` for `chunks` and `audio_files`
+* SQLite: Index on `note_id` for `chunks` and `audio_files`, plus additional performance indexes
 * Qdrant: Indexed via vector similarity (cosine or dot product)
