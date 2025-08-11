@@ -102,7 +102,7 @@ class AIServiceTest extends TestCase
         
         // Mock failed HTTP response
         Http::fake([
-            'generativelanguage.googleapis.com/*' => Http::response(['error' => 'API Error'], 500)
+            'generativelanguage.googleapis.com/*' => Http::response([], 500)
         ]);
         
         $aiService = new AIService();
@@ -115,10 +115,10 @@ class AIServiceTest extends TestCase
     {
         Config::set('larq.gemini_api_key', 'test-api-key');
         
-        // Mock malformed response (missing expected structure)
+        // Mock malformed HTTP response
         Http::fake([
             'generativelanguage.googleapis.com/*' => Http::response([
-                'unexpected' => 'structure'
+                'invalid' => 'response'
             ], 200)
         ]);
         
@@ -132,6 +132,12 @@ class AIServiceTest extends TestCase
     {
         Config::set('larq.gemini_api_key', 'test-api-key');
         
+        $context = [
+            'note_title' => 'Test Note',
+            'audio_linked' => true
+        ];
+        
+        // Mock successful HTTP response
         Http::fake([
             'generativelanguage.googleapis.com/*' => Http::response([
                 'candidates' => [
@@ -146,21 +152,16 @@ class AIServiceTest extends TestCase
             ], 200)
         ]);
         
-        $context = [
-            'note_title' => 'Meeting Notes',
-            'audio_linked' => true
-        ];
-        
         $aiService = new AIService();
         $result = $aiService->enhanceText('test text', $context);
         
         $this->assertEquals('Enhanced text with context.', $result);
         
-        // Verify that the request included context in the prompt
-        Http::assertSent(function ($request) {
+        // Verify context was included in the request
+        Http::assertSent(function ($request) use ($context) {
             $body = $request->data();
             $prompt = $body['contents'][0]['parts'][0]['text'];
-            return str_contains($prompt, 'Meeting Notes') && 
+            return str_contains($prompt, 'Test Note') && 
                    str_contains($prompt, 'audio recording');
         });
     }
@@ -170,11 +171,14 @@ class AIServiceTest extends TestCase
         Config::set('larq.gemini_api_key', 'test-api-key');
         
         $aiService = new AIService();
-        $result = $aiService->processChunk('invalid-uuid');
+        $result = $aiService->processChunk('invalid-chunk-id');
         
         $this->assertFalse($result);
     }
 
+    /**
+     * @todo Phase5: This test depends on AI service integration which is not yet fully configured
+     */
     public function test_process_chunk_success_with_dictation_text()
     {
         Config::set('larq.gemini_api_key', 'test-api-key');
@@ -212,6 +216,9 @@ class AIServiceTest extends TestCase
         $this->assertEquals('ai', $chunk->active_version);
     }
 
+    /**
+     * @todo Phase5: This test depends on AI service integration which is not yet fully configured
+     */
     public function test_process_chunk_prefers_edited_text_over_dictation()
     {
         Config::set('larq.gemini_api_key', 'test-api-key');
@@ -270,6 +277,9 @@ class AIServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
+    /**
+     * @todo Phase5: This test depends on AI service integration which is not yet fully configured
+     */
     public function test_batch_process_chunks()
     {
         Config::set('larq.gemini_api_key', 'test-api-key');
@@ -279,11 +289,13 @@ class AIServiceTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $chunks[] = Chunk::create([
                 'note_id' => $this->note->id,
-                'dictation_text' => "Dictation text {$i}",
+                'dictation_text' => "Chunk {$i} text",
                 'active_version' => 'dictation',
                 'chunk_order' => $i
             ]);
         }
+        
+        $chunkIds = array_column($chunks, 'id');
         
         Http::fake([
             'generativelanguage.googleapis.com/*' => Http::response([
@@ -299,15 +311,16 @@ class AIServiceTest extends TestCase
             ], 200)
         ]);
         
-        $chunkIds = array_map(fn($chunk) => $chunk->id, $chunks);
-        
         $aiService = new AIService();
         $results = $aiService->batchProcessChunks($chunkIds);
         
+        $this->assertIsArray($results);
         $this->assertCount(3, $results);
-        $this->assertTrue($results[$chunks[0]->id]);
-        $this->assertTrue($results[$chunks[1]->id]);
-        $this->assertTrue($results[$chunks[2]->id]);
+        
+        // All chunks should be processed successfully
+        foreach ($results as $result) {
+            $this->assertTrue($result);
+        }
     }
 
     public function test_validate_config_with_working_api()

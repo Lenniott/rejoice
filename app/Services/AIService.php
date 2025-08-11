@@ -35,7 +35,7 @@ class AIService
     {
         $this->apiKey = config('larq.gemini_api_key');
         $this->model = config('larq.gemini_model', 'gemini-2.0-flash'); // Using 2.0 Flash for text generation
-        $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
+        $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
         $this->timeout = config('larq.ai_timeout', 30); // 30 second timeout
         $this->maxTokens = config('larq.ai_max_tokens', 1000);
         $this->temperature = config('larq.ai_temperature', 0.3); // Lower for more consistent output

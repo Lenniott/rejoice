@@ -57,8 +57,8 @@ class QdrantService
                 }
             }
 
-            // Create collection with appropriate vector size (1536 for OpenAI, 768 for Gemini)
-            $vectorSize = config('larq.gemini_api_key') ? 768 : 1536; // Gemini: 768, OpenAI: 1536
+            // Create collection with configurable vector size
+            $vectorSize = config('larq.vector_size', config('larq.gemini_api_key') ? 768 : 1536);
             
             $vectorParams = [
                 'size' => $vectorSize,
@@ -192,6 +192,51 @@ class QdrantService
 
         } catch (Exception $e) {
             Log::error("Failed to search vectors in Qdrant: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Search for similar vectors using a pre-generated embedding
+     */
+    public function searchWithEmbedding(array $queryEmbedding, int $limit = 10, float $scoreThreshold = 0.7): array
+    {
+        try {
+            // Search for similar vectors using the provided embedding
+            $searchParams = [
+                'vector' => $queryEmbedding,
+                'limit' => $limit,
+                'score_threshold' => $scoreThreshold,
+                'with_payload' => true
+            ];
+
+            $searchPoints = new SearchPoints();
+            $response = $searchPoints->handle($this->collectionName, $searchParams);
+            $responseData = $response->json();
+
+            // Transform results to include metadata
+            $searchResults = [];
+            if (isset($responseData['result'])) {
+                foreach ($responseData['result'] as $result) {
+                    $searchResults[] = [
+                        'id' => $result['id'] ?? null,
+                        'score' => $result['score'],
+                        'payload' => [
+                            'note_id' => $result['payload']['note_id'] ?? null,
+                            'audio_id' => $result['payload']['audio_id'] ?? null,
+                            'chunk_ids' => $result['payload']['chunk_ids'] ?? [],
+                            'source_text' => $result['payload']['source_text'] ?? null,
+                            'created_at' => $result['payload']['created_at'] ?? null,
+                        ]
+                    ];
+                }
+            }
+
+            Log::info("Found " . count($searchResults) . " similar results using provided embedding");
+            return $searchResults;
+
+        } catch (Exception $e) {
+            Log::error("Failed to search vectors with embedding in Qdrant: " . $e->getMessage());
             return [];
         }
     }

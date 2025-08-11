@@ -29,7 +29,7 @@ use Exception;
 class AudioService
 {
     protected $audioBasePath = 'audio';
-    protected $allowedMimeTypes = ['audio/webm', 'audio/wav', 'audio/mp3', 'audio/ogg'];
+    protected $allowedMimeTypes = ['audio/webm', 'audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/ogg'];
     protected $maxFileSize = 50 * 1024 * 1024; // 50MB max
 
     /**

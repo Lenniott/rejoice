@@ -35,6 +35,9 @@ class NoteLevelVectorServiceTest extends TestCase
         ]);
     }
 
+    /**
+     * @todo Phase5: This test depends on VectorService integration which is not yet fully implemented
+     */
     public function test_aggregate_note_content_with_multiple_chunks()
     {
         // Create chunks with different active versions
@@ -70,6 +73,9 @@ class NoteLevelVectorServiceTest extends TestCase
         $this->assertCount(3, $result['chunk_ids']);
     }
 
+    /**
+     * @todo Phase5: This test depends on VectorService integration which is not yet fully implemented
+     */
     public function test_aggregate_note_content_with_empty_chunks()
     {
         // Create chunk with empty text
@@ -94,6 +100,9 @@ class NoteLevelVectorServiceTest extends TestCase
         $this->assertCount(1, $result['chunk_ids']);
     }
 
+    /**
+     * @todo Phase5: This test depends on VectorService integration which is not yet fully implemented
+     */
     public function test_aggregate_note_content_with_no_chunks()
     {
         $result = $this->vectorService->aggregateNoteContent($this->note->id);
