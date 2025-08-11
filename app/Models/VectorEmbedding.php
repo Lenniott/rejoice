@@ -5,7 +5,6 @@
  * 
  * Requirements:
  * - Belongs to a Note (note_id foreign key)
- * - Optionally belongs to an AudioFile (audio_id foreign key) 
  * - Stores reference to Qdrant vector point via qdrant_point_id
  * - Tracks source text that was vectorized and which AI model was used
  * - chunk_ids array links to specific Chunk records included in embedding
@@ -42,7 +41,6 @@ class VectorEmbedding extends Model
      */
     protected $fillable = [
         'note_id',
-        'audio_id',
         'chunk_ids',
         'qdrant_point_id',
         'source_text',
@@ -88,13 +86,7 @@ class VectorEmbedding extends Model
         return $this->belongsTo(Note::class);
     }
 
-    /**
-     * Get the audio file that this embedding is linked to (optional).
-     */
-    public function audioFile(): BelongsTo
-    {
-        return $this->belongsTo(AudioFile::class, 'audio_id');
-    }
+
 
     /**
      * Check if the source text has changed significantly (>20% difference).

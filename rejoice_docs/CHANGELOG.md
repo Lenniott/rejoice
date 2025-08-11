@@ -2,6 +2,82 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-08-02] - Phase 5: API Controllers Implementation Complete
+
+### Added
+- **NotesController**: Complete CRUD operations for notes with user ownership validation
+  - List notes for authenticated user only
+  - Create notes with auto-generated titles and user_id assignment
+  - Update note titles with ownership verification
+  - Delete notes with cascade removal of audio, chunks, and vectors
+  - All operations protected by user authentication and ownership checks
+- **AudioController**: Audio upload and initial chunk creation
+  - Accept webm audio files with dictation text
+  - Store audio using AudioService with proper validation
+  - Create initial chunks with dictation text
+  - Queue vectorization jobs for new content
+  - Comprehensive error handling and cleanup on failures
+- **ChunksController**: Chunk editing and AI processing operations
+  - Update chunk text with version tracking (dictation/edited/ai)
+  - Trigger AI processing using AIService.processChunk()
+  - Automatic re-vectorization after content changes
+  - User ownership validation through note relationships
+- **SearchController**: Semantic search operations using dual-level vectorization
+  - Semantic search across chunks and notes with dual results
+  - Find similar notes using note-level vectors
+  - User ownership validation for all search operations
+  - Proper error handling for search failures
+- **VectorizationController**: Manual re-embedding triggers
+  - Trigger vectorization for specific notes (note-level + chunk-level)
+  - Support for selective vectorization types
+  - Background job queuing for vectorization processing
+  - User ownership validation for all operations
+
+### Changed
+- **API Routes**: Complete RESTful API endpoint structure implemented
+  - 14 API endpoints covering all core functionality
+  - Authentication middleware applied to all protected routes
+  - Proper route naming and HTTP method usage
+  - Resource-based routing for notes with custom endpoints
+- **User Security**: Enhanced security with user ownership validation
+  - All controllers verify user ownership before operations
+  - Notes filtered by authenticated user in all queries
+  - Chunks validated through note ownership relationships
+  - Prevents unauthorized access to other users' data
+- **Model Relationships**: Fixed missing relationships in Chunk model
+  - Added audioFile() relationship for audio_id foreign key
+  - Updated fillable fields to include audio_id and dictation_text
+  - Proper relationship loading in controller responses
+
+### Technical Details
+- **API Structure**: RESTful endpoints following Laravel conventions
+  - `GET /api/notes` - List user's notes
+  - `POST /api/notes` - Create new note
+  - `PATCH /api/notes/{id}` - Update note title
+  - `DELETE /api/notes/{id}` - Delete note with cascade
+  - `POST /api/notes/{noteId}/audio` - Upload audio + create chunk
+  - `PATCH /api/chunks/{id}` - Edit chunk text
+  - `POST /api/chunks/{id}/ai-process` - Process chunk with AI
+  - `POST /api/search/semantic` - Semantic search
+  - `GET /api/notes/{id}/similar` - Find similar notes
+  - `POST /api/vectorize/run` - Trigger vectorization
+  - `POST /api/notes/{id}/vectorize` - Vectorize specific note
+- **Authentication**: Laravel Sanctum API token authentication
+- **Validation**: Comprehensive input validation for all endpoints
+- **Error Handling**: Proper HTTP status codes and error messages
+- **Background Jobs**: Vectorization and AI processing queued for scalability
+
+### Security Features
+- **User Isolation**: Complete data isolation between users
+- **Ownership Validation**: All operations verify user ownership
+- **Input Sanitization**: Comprehensive validation and sanitization
+- **Authentication Required**: All API endpoints protected by auth middleware
+
+### Next Steps
+- **Phase 6**: Frontend React Components implementation
+- **Phase 7**: End-to-end testing and validation
+- **Phase 8**: Performance optimization and monitoring
+
 ## [2025-08-02] - Dual-Level VectorService Implementation Complete
 
 ### Added

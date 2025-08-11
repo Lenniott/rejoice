@@ -1,19 +1,21 @@
 <?php
 
 /**
- * AudioFile Model - References to audio files stored on filesystem
+ * AudioFile Model - References to audio files for transcription processing
  * 
  * Requirements:
  * - Belongs to a Note (note_id foreign key)
- * - Stores metadata about .webm audio files
- * - File path follows pattern: storage/app/audio/{note_id}/{uuid}.webm
- * - Tracks duration, file size, mime type for UI and storage management
+ * - Stores metadata about audio files
+ * - File path follows pattern: storage/app/audio/{note_id}/{uuid}.{ext}
+ * - Tracks duration, file size, mime type for processing
+ * - Status tracking: uploaded -> processing -> transcribed -> deleted
+ * - Verification fields ensure transcript persistence before audio deletion
  * - Uses UUID as primary key
  * 
  * Flow:
- * - User records audio -> AudioFile record created with note_id and file metadata
- * - Audio file saved to filesystem at specified path
- * - AudioFile can be linked to Chunk records for transcription
+ * - User uploads audio -> AudioFile record created with status 'uploaded'
+ * - Transcription job processes -> status 'processing' -> 'transcribed'
+ * - Verification confirms chunks persisted -> status 'deleted', audio file removed
  */
 
 namespace App\Models;
@@ -49,6 +51,13 @@ class AudioFile extends Model
         'duration_seconds',
         'file_size_bytes',
         'mime_type',
+        'status',
+        'transcribed_at',
+        'transcript_verified_at',
+        'transcript_chunk_count',
+        'embedding_window_count',
+        'transcript_checksum',
+        'delete_error',
     ];
 
     /**
@@ -57,6 +66,10 @@ class AudioFile extends Model
     protected $casts = [
         'duration_seconds' => 'integer',
         'file_size_bytes' => 'integer',
+        'transcribed_at' => 'datetime',
+        'transcript_verified_at' => 'datetime',
+        'transcript_chunk_count' => 'integer',
+        'embedding_window_count' => 'integer',
     ];
 
     /**
@@ -81,19 +94,5 @@ class AudioFile extends Model
         return $this->belongsTo(Note::class);
     }
 
-    /**
-     * Get the chunks associated with this audio file.
-     */
-    public function chunks(): HasMany
-    {
-        return $this->hasMany(Chunk::class, 'audio_id');
-    }
 
-    /**
-     * Get the vector embeddings associated with this audio file.
-     */
-    public function vectorEmbeddings(): HasMany
-    {
-        return $this->hasMany(VectorEmbedding::class, 'audio_id');
-    }
 }

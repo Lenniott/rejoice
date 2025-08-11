@@ -1,20 +1,19 @@
 <?php
 
 /**
- * Chunk Model - Editable text blocks linked to audio or manually created
+ * Chunk Model - Editable text blocks for notes
  * 
  * Requirements:
  * - Belongs to a Note (note_id foreign key)
- * - Optionally belongs to an AudioFile (audio_id foreign key)
- * - Stores three versions of text: dictation (raw), ai (refined), edited (user)
+ * - Stores two versions of text: ai (refined), edited (user)
  * - active_version field determines which text version to display
  * - chunk_order maintains sequence within a note
+ * - batch_id links chunks processed together for verification
  * - Uses UUID as primary key
  * 
  * Flow:
- * - Audio transcribed -> Chunk created with dictation_text and active_version='dictation'
- * - AI refines text -> ai_text populated, active_version can be switched to 'ai'
- * - User edits -> edited_text populated, active_version switched to 'edited'
+ * - Audio transcribed -> Chunk created with ai_text and active_version='edited'
+ * - User edits -> edited_text populated, active_version can be switched to 'edited'
  * - User can toggle between versions via active_version field
  */
 
@@ -47,6 +46,7 @@ class Chunk extends Model
         'edited_text',
         'active_version',
         'chunk_order',
+        'batch_id',
     ];
 
     /**
@@ -79,12 +79,14 @@ class Chunk extends Model
     }
 
     /**
-     * Get the audio file that this chunk is linked to (optional).
+     * Get the audio file that this chunk is associated with.
      */
     public function audioFile(): BelongsTo
     {
         return $this->belongsTo(AudioFile::class, 'audio_id');
     }
+
+
 
     /**
      * Get the active text based on the active_version.
@@ -92,10 +94,9 @@ class Chunk extends Model
     public function getActiveTextAttribute(): ?string
     {
         return match($this->active_version) {
-            'dictation' => $this->dictation_text,
             'ai' => $this->ai_text,
             'edited' => $this->edited_text,
-            default => $this->dictation_text,
+            default => $this->edited_text,
         };
     }
 

@@ -1,0 +1,195 @@
+app/Models/Note.php:16: * - Audio transcribed -> Chunk records created linked to note_id and optionally audio_id
+app/Models/AudioFile.php:89:        return $this->hasMany(Chunk::class, 'audio_id');
+app/Models/AudioFile.php:97:        return $this->hasMany(VectorEmbedding::class, 'audio_id');
+app/Models/VectorEmbedding.php:8: * - Optionally belongs to an AudioFile (audio_id foreign key) 
+app/Models/VectorEmbedding.php:45:        'audio_id',
+app/Models/VectorEmbedding.php:96:        return $this->belongsTo(AudioFile::class, 'audio_id');
+app/Models/Chunk.php:8: * - Optionally belongs to an AudioFile (audio_id foreign key)
+app/Models/Chunk.php:15: * - Audio transcribed -> Chunk created with dictation_text and active_version='dictation'
+app/Models/Chunk.php:44:        'audio_id',
+app/Models/Chunk.php:45:        'dictation_text',
+app/Models/Chunk.php:86:        return $this->belongsTo(AudioFile::class, 'audio_id');
+app/Models/Chunk.php:95:            'dictation' => $this->dictation_text,
+app/Models/Chunk.php:98:            default => $this->dictation_text,
+app/Jobs/VectorizeContentJob.php:88:            'audio_id' => $this->audioId,
+app/Jobs/VectorizeContentJob.php:108:                        'audio_id' => $this->audioId
+app/Jobs/VectorizeContentJob.php:138:                    'audio_id' => $this->audioId,
+app/Jobs/VectorizeContentJob.php:146:                    'audio_id' => $this->audioId,
+app/Jobs/VectorizeContentJob.php:154:                        'audio_id' => $this->audioId,
+app/Jobs/VectorizeContentJob.php:166:                'audio_id' => $this->audioId,
+app/Jobs/VectorizeContentJob.php:189:            'audio_id' => $this->audioId,
+app/Services/VectorService.php:13: * - Chunk-level: Text input -> Segment text -> Generate embeddings -> Store with audio_id/chunk_ids
+app/Services/VectorService.php:14: * - Note-level: Note ID -> Aggregate chunks -> Single embedding -> Store with audio_id=NULL, chunk_ids=[]
+app/Services/VectorService.php:61:                'audio_id' => $audioId
+app/Services/VectorService.php:72:                    'audio_id' => $audioId,
+app/Services/VectorService.php:82:                'audio_id' => $audioId,
+app/Services/VectorService.php:107:                'audio_id' => $audioId,
+app/Services/VectorService.php:122:                'audio_id' => $audioId,
+app/Services/VectorService.php:234:                    $activeText = $chunk->dictation_text ?? '';
+app/Services/VectorService.php:389:                $audioId = $payload['audio_id'] ?? null;
+app/Services/VectorService.php:622:            $embeddings = VectorEmbedding::where('audio_id', $audioId)->get();
+app/Services/VectorService.php:638:            VectorEmbedding::where('audio_id', $audioId)->delete();
+app/Services/VectorService.php:641:                'audio_id' => $audioId,
+app/Services/VectorService.php:649:                'audio_id' => $audioId,
+app/Services/VectorService.php:665:            $vectorsWithAudio = VectorEmbedding::whereNotNull('audio_id')->count();
+app/Services/VectorService.php:666:            $noteLevelVectors = VectorEmbedding::whereNull('audio_id')
+app/Services/VectorService.php:712:            $query->where('audio_id', $audioId);
+app/Services/VectorService.php:714:            $query->whereNull('audio_id')
+app/Services/VectorService.php:730:            ->whereNull('audio_id')
+app/Services/VectorService.php:746:            $query->where('audio_id', $audioId);
+app/Services/VectorService.php:748:            $query->whereNull('audio_id');
+app/Services/VectorService.php:773:            ->whereNull('audio_id')
+app/Services/VectorService.php:792:            ->whereNull('audio_id')
+app/Services/VectorService.php:815:                'audio_id' => $audioId,
+app/Services/VectorService.php:834:                'audio_id' => $audioId,
+app/Services/VectorService.php:857:                'audio_id' => null,  // Note-level has no audio_id
+app/Services/VectorService.php:901:                $audioId = $payload['audio_id'] ?? null;
+app/Services/VectorService.php:904:                // Only include note-level results (audio_id = null AND chunk_ids = [])
+app/Services/VectorService.php:963:                    'audio_id' => $result['payload']['audio_id'] ?? null
+app/Services/VectorService.php:974:                    'text_preview' => substr($chunk->ai_text ?: $chunk->edited_text ?: $chunk->dictation_text, 0, 200),
+app/Services/VectorServiceExtended.php:13: * - Chunk-level: Text input -> Segment text -> Generate embeddings -> Store with audio_id/chunk_ids
+app/Services/VectorServiceExtended.php:14: * - Note-level: Note ID -> Aggregate chunks -> Single embedding -> Store with audio_id=NULL, chunk_ids=[]
+app/Services/VectorServiceExtended.php:61:                'audio_id' => $audioId
+app/Services/VectorServiceExtended.php:72:                    'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:82:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:107:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:122:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:234:                    $activeText = $chunk->dictation_text ?? '';
+app/Services/VectorServiceExtended.php:389:                $audioId = $payload['audio_id'] ?? null;
+app/Services/VectorServiceExtended.php:622:            $embeddings = VectorEmbedding::where('audio_id', $audioId)->get();
+app/Services/VectorServiceExtended.php:638:            VectorEmbedding::where('audio_id', $audioId)->delete();
+app/Services/VectorServiceExtended.php:641:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:649:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:665:            $vectorsWithAudio = VectorEmbedding::whereNotNull('audio_id')->count();
+app/Services/VectorServiceExtended.php:666:            $noteLevelVectors = VectorEmbedding::whereNull('audio_id')
+app/Services/VectorServiceExtended.php:712:            $query->where('audio_id', $audioId);
+app/Services/VectorServiceExtended.php:714:            $query->whereNull('audio_id')
+app/Services/VectorServiceExtended.php:730:            ->whereNull('audio_id')
+app/Services/VectorServiceExtended.php:746:            $query->where('audio_id', $audioId);
+app/Services/VectorServiceExtended.php:748:            $query->whereNull('audio_id');
+app/Services/VectorServiceExtended.php:773:            ->whereNull('audio_id')
+app/Services/VectorServiceExtended.php:792:            ->whereNull('audio_id')
+app/Services/VectorServiceExtended.php:815:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:834:                'audio_id' => $audioId,
+app/Services/VectorServiceExtended.php:857:                'audio_id' => null,  // Note-level has no audio_id
+app/Services/VectorServiceExtended.php:901:                $audioId = $payload['audio_id'] ?? null;
+app/Services/VectorServiceExtended.php:904:                // Only include note-level results (audio_id = null AND chunk_ids = [])
+app/Services/VectorServiceExtended.php:963:                    'audio_id' => $result['payload']['audio_id'] ?? null
+app/Services/VectorServiceExtended.php:974:                    'text_preview' => substr($chunk->ai_text ?: $chunk->edited_text ?: $chunk->dictation_text, 0, 200),
+app/Services/AIService.php:132:            $sourceText = $chunk->edited_text ?: $chunk->dictation_text;
+app/Services/AIService.php:144:                'audio_linked' => !empty($chunk->audio_id)
+app/Services/QdrantService.php:119:                'audio_id' => $vectorEmbedding->audio_id,
+app/Services/QdrantService.php:182:                        'audio_id' => $result['payload']['audio_id'] ?? null,
+app/Services/AudioService.php:87:                'audio_id' => $audioUuid,
+app/Services/AudioService.php:131:     * Get audio file stream for download/playback
+app/Services/AudioService.php:168:                'audio_id' => $audioId,
+app/Services/AudioService.php:176:                'audio_id' => $audioId,
+app/Services/AudioService.php:207:                    'audio_id' => $audioFile->id,
+tests/Unit/Jobs/VectorizeContentJobTest.php:47:    public function test_job_can_be_constructed_with_audio_id()
+tests/Unit/Jobs/VectorizeContentJobTest.php:253:            'dictation_text' => 'Test chunk',
+tests/Unit/Jobs/VectorizeContentJobTest.php:300:            'dictation_text' => 'Chunk 1',
+tests/Unit/Jobs/VectorizeContentJobTest.php:307:            'dictation_text' => 'Chunk 2',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:64:            'dictation_text' => 'Test dictation text',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:88:            'dictation_text' => 'Test dictation text',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:112:            'dictation_text' => 'Test dictation text',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:133:            'dictation_text' => 'Test dictation text',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:155:            'dictation_text' => 'Test dictation text',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:177:            'dictation_text' => 'Test dictation text',
+tests/Unit/Jobs/ProcessChunkWithAITest.php:199:            'dictation_text' => 'Test dictation text',
+tests/Unit/Services/AIServiceTest.php:178:    public function test_process_chunk_success_with_dictation_text()
+tests/Unit/Services/AIServiceTest.php:185:            'dictation_text' => 'This is raw dictation with bad grammar',
+tests/Unit/Services/AIServiceTest.php:222:            'dictation_text' => 'Original dictation text',
+tests/Unit/Services/AIServiceTest.php:282:                'dictation_text' => "Dictation text {$i}",
+tests/Unit/Services/AIServiceTest.php:376:            'dictation_text' => 'Text 1',
+tests/Unit/Services/AIServiceTest.php:384:            'dictation_text' => 'Text 2',
+tests/Unit/Services/AIServiceTest.php:392:            'dictation_text' => 'Text 3',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:43:            'dictation_text' => 'First chunk dictation text.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:51:            'dictation_text' => 'Second chunk dictation.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:59:            'dictation_text' => 'Third chunk only dictation.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:78:            'dictation_text' => '',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:86:            'dictation_text' => 'Valid chunk text.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:110:            'dictation_text' => 'This is note content for vectorization.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:139:            ->whereNull('audio_id')
+tests/Unit/Services/NoteLevelVectorServiceTest.php:171:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:181:            'dictation_text' => $text,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:198:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:270:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:313:            'audio_id' => $audioFile->id,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:322:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:340:                        'audio_id' => $audioFile->id,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:349:                        'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:380:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:396:            'audio_id' => $audioFile->id,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:410:        $this->assertNull($result->audio_id);
+tests/Unit/Services/NoteLevelVectorServiceTest.php:419:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:435:            'audio_id' => $audioFile->id,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:469:            'audio_id' => null,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:485:            'audio_id' => $audioFile->id,
+tests/Unit/Services/NoteLevelVectorServiceTest.php:513:            'dictation_text' => 'Third chunk.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:520:            'dictation_text' => 'First chunk.',
+tests/Unit/Services/NoteLevelVectorServiceTest.php:527:            'dictation_text' => 'Second chunk.',
+tests/Unit/Services/VectorServiceTest.php:260:            'audio_id' => $audioFile->id,
+tests/Unit/Services/VectorServiceTest.php:280:        $this->assertEquals(0, VectorEmbedding::where('audio_id', $audioFile->id)->count());
+tests/Unit/Services/VectorServiceTest.php:294:            'audio_id' => $audioFile->id,
+tests/Feature/ChunkAIProcessingTest.php:43:            'dictation_text' => 'this is bad grammar text that need improving',
+tests/Feature/ChunkAIProcessingTest.php:74:        $this->assertEquals('this is bad grammar text that need improving', $chunk->dictation_text); // Original preserved
+tests/Feature/ChunkAIProcessingTest.php:89:            'dictation_text' => 'meeting notes about project alpha',
+tests/Feature/ChunkAIProcessingTest.php:92:            'audio_id' => $audioFile->id
+tests/Feature/ChunkAIProcessingTest.php:130:            'dictation_text' => 'original dictation text',
+tests/Feature/ChunkAIProcessingTest.php:172:                'dictation_text' => "Dictation text number {$i}",
+tests/Feature/ChunkAIProcessingTest.php:216:            'dictation_text' => 'test dictation text',
+tests/Feature/ChunkAIProcessingTest.php:242:            'dictation_text' => 'test dictation text',
+tests/Feature/ChunkAIProcessingTest.php:272:            'dictation_text' => 'test dictation for background processing',
+tests/Feature/ChunkAIProcessingTest.php:291:            'dictation_text' => 'Text 1',
+tests/Feature/ChunkAIProcessingTest.php:299:            'dictation_text' => 'Text 2',
+tests/Feature/ChunkAIProcessingTest.php:307:            'dictation_text' => 'Text 3',
+tests/Feature/ChunkAIProcessingTest.php:353:            'dictation_text' => 'test dictation text',
+tests/Feature/ChunkAIProcessingTest.php:385:            'dictation_text' => 'test with relationships',
+tests/Feature/NoteSimilarityTest.php:40:            'dictation_text' => 'Machine learning is a subset of artificial intelligence that focuses on algorithms.',
+tests/Feature/NoteSimilarityTest.php:53:            'dictation_text' => 'Artificial intelligence and deep learning are transforming technology.',
+tests/Feature/NoteSimilarityTest.php:66:            'dictation_text' => 'Here are some delicious pasta recipes for dinner.',
+tests/Feature/NoteSimilarityTest.php:94:            ->whereNull('audio_id')
+tests/Feature/NoteSimilarityTest.php:113:            'audio_id' => null,
+tests/Feature/NoteSimilarityTest.php:183:            'dictation_text' => 'This is the third chunk.',
+tests/Feature/NoteSimilarityTest.php:190:            'dictation_text' => 'This is the first chunk.',
+tests/Feature/NoteSimilarityTest.php:197:            'dictation_text' => 'This is the second chunk.',
+tests/Feature/NoteSimilarityTest.php:221:            'dictation_text' => 'Original dictation text.',
+tests/Feature/NoteSimilarityTest.php:231:            'dictation_text' => 'Another dictation.',
+tests/Feature/NoteSimilarityTest.php:240:            'dictation_text' => 'Simple dictation.',
+tests/Feature/NoteSimilarityTest.php:265:            'audio_id' => null,
+tests/Feature/NoteSimilarityTest.php:275:            'dictation_text' => $originalText,
+tests/Feature/NoteSimilarityTest.php:300:            'audio_id' => null,
+tests/Feature/NoteSimilarityTest.php:310:            'dictation_text' => $newText,
+tests/Feature/NoteSimilarityTest.php:359:                        'audio_id' => $audioFile->id,
+tests/Feature/NoteSimilarityTest.php:368:                        'audio_id' => null,
+tests/Feature/NoteSimilarityTest.php:425:            'audio_id' => null,
+tests/Feature/DatabaseTest.php:154:            'audio_id' => $audioFile->id,
+tests/Feature/DatabaseTest.php:155:            'dictation_text' => 'This is the raw dictation text',
+tests/Feature/DatabaseTest.php:165:        $this->assertEquals($audioFile->id, $chunk->audio_id);
+tests/Feature/DatabaseTest.php:200:            'dictation_text' => 'First chunk text',
+tests/Feature/DatabaseTest.php:207:            'dictation_text' => 'Second chunk text',
+tests/Feature/DatabaseTest.php:214:            'audio_id' => $audioFile->id,
+tests/Feature/DatabaseTest.php:225:        $this->assertEquals($audioFile->id, $vectorEmbedding->audio_id);
+tests/Feature/DatabaseTest.php:259:            'audio_id' => $audioFile->id,
+tests/Feature/DatabaseTest.php:260:            'dictation_text' => 'Test text',
+tests/Feature/DatabaseTest.php:267:            'audio_id' => $audioFile->id,
+tests/Feature/DatabaseTest.php:306:            'dictation_text' => 'Raw dictation',
+tests/Feature/DatabaseTest.php:374:            'dictation_text' => 'First chunk',
+tests/Feature/DatabaseTest.php:381:            'dictation_text' => 'Second chunk',
+tests/Feature/VectorSearchTest.php:53:            'audio_id' => $audioFile->id,
+tests/Feature/VectorSearchTest.php:54:            'dictation_text' => 'This is a test transcription about machine learning and artificial intelligence.',
+tests/Feature/VectorSearchTest.php:89:        $this->assertEquals($audioFile->id, $vectorEmbedding->audio_id);
+tests/Feature/VectorSearchTest.php:259:            'audio_id' => $audioFile->id,
+tests/Feature/VectorSearchTest.php:286:        $this->assertEquals(0, VectorEmbedding::where('audio_id', $audioFile->id)->count());
+tests/Feature/VectorSearchTest.php:287:        $this->assertEquals(1, VectorEmbedding::where('note_id', $this->note->id)->whereNull('audio_id')->count());
+tests/Feature/VectorSearchTest.php:301:            'audio_id' => $audioFile->id,
+tests/Feature/VectorSearchTest.php:351:            'dictation_text' => 'First chunk content',
+tests/Feature/VectorSearchTest.php:358:            'dictation_text' => 'Second chunk content',
+tests/Feature/VectorSearchTest.php:376:        $combinedText = $chunk1->dictation_text . ' ' . $chunk2->dictation_text;
+database/migrations/2025_08_01_202728_create_chunks_table.php:17:            $table->uuid('audio_id')->nullable()->comment('Optional: links chunk to specific recording');
+database/migrations/2025_08_01_202728_create_chunks_table.php:18:            $table->text('dictation_text')->nullable()->comment('Raw browser dictation API output');
+database/migrations/2025_08_01_202728_create_chunks_table.php:27:            $table->foreign('audio_id')->references('id')->on('audio_files')->onDelete('set null');
+database/migrations/2025_08_01_202728_create_chunks_table.php:31:            $table->index('audio_id', 'idx_chunks_audio_id');
+database/migrations/2025_08_01_202746_create_vector_embeddings_table.php:17:            $table->uuid('audio_id')->nullable()->comment('Optional: specific audio source');
+database/migrations/2025_08_01_202746_create_vector_embeddings_table.php:27:            $table->foreign('audio_id')->references('id')->on('audio_files')->onDelete('set null');
+database/migrations/2025_08_01_202746_create_vector_embeddings_table.php:31:            $table->index('audio_id', 'idx_vector_embeddings_audio_id');
