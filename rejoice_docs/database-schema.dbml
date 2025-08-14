@@ -11,6 +11,17 @@ Table users {
   Note: 'Laravel Breeze authentication users'
 }
 
+Table sessions {
+  id varchar(255) [pk, note: 'Session identifier']
+  user_id bigint [ref: > users.id, note: 'User ID (nullable for guests)']
+  ip_address varchar(45) [note: 'User IP address']
+  user_agent text [note: 'User browser/device info']
+  payload text [not null, note: 'Serialized session data']
+  last_activity integer [not null, note: 'Unix timestamp of last activity']
+
+  Note: 'Laravel session storage for authentication'
+}
+
 Table notes {
   id uuid [pk, note: 'Generated via Laravel UUID in boot() method']
   user_id uuid [ref: > users.id, not null]
@@ -54,6 +65,7 @@ Table chunks {
   edited_text text [note: 'User-edited final version']
   active_version varchar(10) [not null, default: 'dictation', note: 'dictation | ai | edited']
   chunk_order integer [not null, default: 0, note: 'Order of chunk within note']
+  batch_id uuid [note: 'Batch processing identifier for vectorization jobs']
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
 
@@ -64,6 +76,7 @@ Table chunks {
     audio_id [name: 'idx_chunks_audio_id']
     (note_id, chunk_order) [name: 'idx_chunks_note_order']
     active_version [name: 'idx_chunks_active_version']
+    batch_id [name: 'idx_chunks_batch_id']
   }
 }
 

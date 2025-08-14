@@ -25,7 +25,21 @@ Stores user authentication data.
 
 ---
 
-### 2.2 Notes Table
+### 2.2 Sessions Table (Laravel Breeze)
+Stores user session data for authentication.
+
+| Column        | Type         | Constraints     | Description                    |
+|---------------|--------------|-----------------|--------------------------------|
+| id            | VARCHAR(255) | PK              | Session identifier             |
+| user_id       | BIGINT       | FK (users.id)   | User ID (nullable for guests)  |
+| ip_address    | VARCHAR(45)  | Nullable        | User's IP address              |
+| user_agent    | TEXT         | Nullable        | User's browser/device info     |
+| payload       | TEXT         | NOT NULL        | Serialized session data        |
+| last_activity| INTEGER      | NOT NULL        | Unix timestamp of last activity|
+
+---
+
+### 2.3 Notes Table
 Stores top-level notes.
 
 | Column       | Type       | Constraints     | Description                   |
@@ -38,7 +52,7 @@ Stores top-level notes.
 
 ---
 
-### 2.3 Audio Files Table
+### 2.4 Audio Files Table
 Stores audio metadata and file references.
 
 | Column     | Type  | Constraints        | Description                        |
@@ -50,7 +64,7 @@ Stores audio metadata and file references.
 
 ---
 
-### 2.4 Chunks Table
+### 2.5 Chunks Table
 Represents blocks of text (dictation, AI, edited).
 
 | Column        | Type       | Constraints         | Description                              |
@@ -63,6 +77,7 @@ Represents blocks of text (dictation, AI, edited).
 | edited_text   | TEXT       | Nullable            | User-edited version                        |
 | active_version| VARCHAR(10)| NOT NULL (check)    | 'dictation', 'ai', or 'edited'            |
 | chunk_order   | INTEGER    | NOT NULL            | Order of chunk in note                     |
+| batch_id      | UUID       | Nullable            | Batch processing identifier                |
 | created_at    | TIMESTAMP  | NOT NULL            | Creation time                              |
 | updated_at    | TIMESTAMP  | NOT NULL            | Last modified time                         |
 

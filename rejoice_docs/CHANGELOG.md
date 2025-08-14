@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-08-11] - Schema Documentation Updates
+
+### Updated
+- **Data Schemas Documentation**: Updated `data-schemas.md` to reflect current database state
+  - Added missing `batch_id` column to chunks table for vectorization job tracking
+  - Added sessions table documentation for Laravel Breeze authentication
+  - Corrected table numbering sequence after adding sessions table
+- **Database Schema DBML**: Updated `database-schema.dbml` to match actual database structure
+  - Added `batch_id` column and index to chunks table
+  - Added sessions table with proper relationships and constraints
+  - Ensured schema matches current migration state
+
+### Technical Details
+- **Chunks Table**: Added `batch_id` UUID column for tracking vectorization job batches
+- **Sessions Table**: Added for Laravel session storage with proper foreign key relationships
+- **Indexes**: Added `idx_chunks_batch_id` for batch processing performance
+
+---
+
 ## [2025-08-02] - Phase 5: API Controllers Implementation Complete
 
 ### Added
